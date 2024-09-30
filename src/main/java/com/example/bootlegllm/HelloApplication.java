@@ -57,6 +57,8 @@ public class HelloApplication extends Application {
             new URL(url);
             Document doc = Jsoup.connect(url).get();
             String text = doc.text();
+            //"[^a-zA-Z,.?!\\s]", ""; replace
+            //"[\\s,.?!]+" split
 
             flow.getChildren().clear();
             textArea.setText(text);
