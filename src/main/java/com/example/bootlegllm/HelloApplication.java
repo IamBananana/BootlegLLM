@@ -13,9 +13,13 @@ import javafx.stage.Stage;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-
+import java.util.HashMap;
+import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class HelloApplication extends Application {
     TextField textField;
@@ -57,8 +61,9 @@ public class HelloApplication extends Application {
             new URL(url);
             Document doc = Jsoup.connect(url).get();
             String text = doc.text();
-            //"[^a-zA-Z,.?!\\s]", ""; replace
-            //"[\\s,.?!]+" split
+
+
+            getData(text);
 
             flow.getChildren().clear();
             textArea.setText(text);
@@ -73,6 +78,39 @@ public class HelloApplication extends Application {
             textArea.setText("Unexpected error: " + e.getMessage());
         } finally {
             flow.getChildren().add(textArea);
+        }
+
+    }
+
+    private static HashMap<String, Integer> getData(String text){
+        try{
+            //kode
+            HashMap<String, HashMap<String, Integer>> map = new HashMap<>();
+
+
+            String[] ord = text.replaceAll("[a-zA-Z,.?!\\s]", "").toLowerCase().split("\\s,.?!+");
+            Pattern pattern;
+            Matcher matcher;
+            int[] antall = new int[5000];
+
+            for (int i = 0; i<ord.length -2; i++) {
+                map.computeIfAbsent(ord[i] + " " + ord[i+1], k -> new HashMap<>())
+                                .merge(ord[i+2], 1, Integer::sum);
+                pattern = Pattern.compile(ord[i] + " " + ord[i+1] + " " + ord[i + 2]);
+                matcher = pattern.matcher(text);
+
+                while(matcher.find()){
+                    antall[i]++;
+                }
+                if(antall[i] > 1)
+                    System.out.println("The expression: " + ord[i] + " " + ord[i+1] + " " + ord[i + 2] + " has been found " + antall[i] + " times");
+                //j++;
+            }
+
+            return map;
+        } catch(IOException e) {
+            e.printStackTrace();
+            System.out.println("Fail");
         }
     }
 }
