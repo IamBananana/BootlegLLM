@@ -48,7 +48,7 @@ public class HelloApplication extends Application {
 
     private void read(FlowPane flow) {
         TextArea textArea = new TextArea();
-        textArea.setMinHeight(100);
+        textArea.setMinHeight(Screen.getPrimary().getBounds().getHeight() * 0.6);
         textArea.setPrefWidth(Screen.getPrimary().getBounds().getWidth() * 0.6);
         textArea.setWrapText(true);
 
