@@ -1,4 +1,4 @@
-/*
+package com.example.bootlegllm;/*
  
 Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
 Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template*/
@@ -17,18 +17,18 @@ public class Oblig2 {
             String filnavn = "Fil.txt";
             File fil = new File(filnavn);
             Scanner leser = new Scanner(fil);
-            String tekst = "";
+            StringBuilder tekst = new StringBuilder();
             while(leser.hasNext()){
-                tekst+= leser.next() + " ";
+                tekst.append(leser.next()).append(" ");
             }
-            String[] ord = tekst.replaceAll("[^a-zA-Z ]", "").toLowerCase().split("\\s+");
+            String[] ord = tekst.toString().replaceAll("[^a-zA-Z ]", "").toLowerCase().split("\\s+");
             Pattern pattern;
             Matcher matcher;
             int[] antall = new int[5000];
             int j = 0;
             for (int i = 0; i<ord.length -2; i++) {
                 pattern = Pattern.compile(ord[i] + " " + ord[i+1] + " " + ord[i + 2]);
-                matcher = pattern.matcher(tekst.toLowerCase());
+                matcher = pattern.matcher(tekst.toString().toLowerCase());
 
                 while(matcher.find()){
                     antall[j]++;
@@ -38,13 +38,7 @@ public class Oblig2 {
                 j++;
             }
 
-
-
-
-
-
-
-        }catch(IOException e){
+        } catch(IOException e) {
             e.printStackTrace();
         }
     }
