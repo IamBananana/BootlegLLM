@@ -14,6 +14,8 @@ import java.util.regex.Matcher;
 public class Oblig2 {
     public static void main(String[] args) {
         try{
+
+            //kode
             String filnavn = "Fil.txt";
             File fil = new File(filnavn);
             Scanner leser = new Scanner(fil);
