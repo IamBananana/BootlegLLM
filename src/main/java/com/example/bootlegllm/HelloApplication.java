@@ -62,9 +62,9 @@ public class HelloApplication extends Application {
             String text = doc.text();
 
 
-            //String newText = generateText(getData(text));
             HashMap<String, HashMap<String, Integer>> map = new HashMap<>();
             map = getData(text);
+            System.out.println(generateTextUlrikkeVersion(map, "kom den"));
             wordPicker(map);
 
             flow.getChildren().clear();
@@ -163,5 +163,35 @@ public class HelloApplication extends Application {
                 }
             }
         }
+    }
+
+    private static String generateTextUlrikkeVersion(HashMap<String, HashMap<String, Integer>> data, String startWords) {
+        StringBuilder output = new StringBuilder(startWords);
+        String[] words = startWords.split(" ");
+
+        for (int i = 0; i < 50; i++) {
+            String key = words[words.length - 2] + " " + words[words.length - 1];
+            if (!data.containsKey(key)) {
+                break;
+            }
+
+            String nextWord = chooseNextWordUlrikkeVersion(data.get(key));
+            output.append(" ").append(nextWord);
+            words = new String[] {words[words.length - 1], nextWord};
+        }
+
+        return output.toString();
+    }
+    private static String chooseNextWordUlrikkeVersion(HashMap<String, Integer> wordMap) {
+        int total = wordMap.values().stream().mapToInt(Integer::intValue).sum();
+        double randomValue = new Random().nextDouble() * total;
+
+        for (Map.Entry<String, Integer> entry : wordMap.entrySet()) {
+            randomValue -= entry.getValue();
+            if (randomValue <= 0) {
+                return entry.getKey();
+            }
+        }
+        return "";
     }
 }
