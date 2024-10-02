@@ -26,7 +26,7 @@ public class HelloApplication extends Application {
     Button button;
 
     @Override
-    public void start(Stage stage) throws IOException {
+    public void start(Stage stage) {
         FlowPane flowPane = new FlowPane();
         label = new Label("Gi URL: ");
         textField = new TextField();
@@ -88,9 +88,11 @@ public class HelloApplication extends Application {
         HashMap<String, HashMap<String, Integer>> map = new HashMap<>();
 
         try {
-            //String[] ord = text.replaceAll("[a-zA-Z,.?!\\s]", "").toLowerCase().split("\\s,.?!+");
-            //Regex funker ikke helt enda
-            String[] ord = text.replaceAll("[^a-zA-ZæøåÆØÅ ]", "").toLowerCase().split("[ ,;.!:?]+");
+            //Regex funker ikke helt enda, hvordan beholde ,.;:-_!?/+ ??????. Esså sykt done med regex fakk d her
+            //funker sånn isj men omg
+            String[] ord = text.replaceAll("[^a-zA-ZæøåÆØÅ,.;:_!?/+\\- ]", "")
+                    .toLowerCase()
+                    .split("(?=[,;.!:?+/_-])|(?<=[,;.!:?+/_-])|\\s+");
 
             for (int i = 0; i < ord.length - 2; i++) {
                 map.computeIfAbsent(ord[i] + " " + ord[i + 1], k -> new HashMap<>()).merge(ord[i + 2], 1, Integer::sum);
@@ -120,10 +122,8 @@ public class HelloApplication extends Application {
             for (String innerKey : innerMap.keySet()) {
                 sum += innerMap.get(innerKey);
             }
-
-            out.append(calculateWord(sum) + " ");
+            out.append(calculateWord(sum)).append(" ");
         }
-
         return out.toString();
     }
 
@@ -139,27 +139,27 @@ public class HelloApplication extends Application {
     //  ikke ferdig, let me cook.
     //relativt cooked nå
     private static void wordPicker(HashMap<String, HashMap<String, Integer>> data) {
-        int sum = 0;
-        for (Map.Entry<String, HashMap<String, Integer>> entry : data.entrySet()) {
-            HashMap<String, Integer> innerMap = entry.getValue();
+        Random random = new Random();
+
+        for (Map.Entry<String, HashMap<String, Integer>> outerEntry : data.entrySet()) {
+            String outerKey = outerEntry.getKey();
+            HashMap<String, Integer> innerMap = outerEntry.getValue();
+
+            int sum = 0;
             for (Integer value : innerMap.values()) {
                 sum += value;
             }
-        }
 
-        Random random = new Random();
-        double randomValue = random.nextDouble() * sum;
+            int randomValue = random.nextInt(sum);
 
-        for (Map.Entry<String, HashMap<String, Integer>> entry : data.entrySet()) {
-            HashMap<String, Integer> innerMap = entry.getValue();
             for (Map.Entry<String, Integer> innerEntry : innerMap.entrySet()) {
                 String word = innerEntry.getKey();
                 int weight = innerEntry.getValue();
                 randomValue -= weight;
 
-                if (randomValue <= 0) {
-                    System.out.println("Selected word: " + word);
-                    return;
+                if (randomValue < 0) {
+                    System.out.println("Selected word from '" + outerKey + "': " + word);
+                    break;
                 }
             }
         }
@@ -177,11 +177,12 @@ public class HelloApplication extends Application {
 
             String nextWord = chooseNextWordUlrikkeVersion(data.get(key));
             output.append(" ").append(nextWord);
-            words = new String[] {words[words.length - 1], nextWord};
+            words = new String[]{words[words.length - 1], nextWord};
         }
 
         return output.toString();
     }
+
     private static String chooseNextWordUlrikkeVersion(HashMap<String, Integer> wordMap) {
         int total = wordMap.values().stream().mapToInt(Integer::intValue).sum();
         double randomValue = new Random().nextDouble() * total;
