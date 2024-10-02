@@ -99,12 +99,13 @@ public class HelloApplication extends Application {
                 pattern = Pattern.compile(ord[i] + " " + ord[i+1] + " " + ord[i + 2]);
                 matcher = pattern.matcher(text);
 
-                while(matcher.find()){
+                while(matcher.find()) {
                     antall[i]++;
                 }
-                if(antall[i] > 1)
+
+                if(antall[i] > 1){
                     System.out.println("The expression: " + ord[i] + " " + ord[i+1] + " " + ord[i + 2] + " has been found " + antall[i] + " times");
-                //j++;
+                }
             }
 
             return map;
