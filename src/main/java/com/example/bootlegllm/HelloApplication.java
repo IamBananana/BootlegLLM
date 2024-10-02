@@ -13,15 +13,12 @@ import javafx.stage.Stage;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Scanner;
+import java.util.Map;
+import java.util.Random;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class HelloApplication extends Application {
     TextField textField;
@@ -66,7 +63,9 @@ public class HelloApplication extends Application {
 
 
             //String newText = generateText(getData(text));
-            getData(text);
+            HashMap<String, HashMap<String, Integer>> map = new HashMap<>();
+            map = getData(text);
+            wordPicker(map);
 
             flow.getChildren().clear();
             textArea.setText(text);
@@ -85,32 +84,32 @@ public class HelloApplication extends Application {
 
     }
 
-    private static HashMap<String, HashMap<String, Integer>> getData(String text){
+    private static HashMap<String, HashMap<String, Integer>> getData(String text) {
         HashMap<String, HashMap<String, Integer>> map = new HashMap<>();
 
         try {
             //String[] ord = text.replaceAll("[a-zA-Z,.?!\\s]", "").toLowerCase().split("\\s,.?!+");
-            String[] ord = text.replaceAll("[^a-zA-Zæøå ]", "").toLowerCase().split("\\s+");
+            //Regex funker ikke helt enda
+            String[] ord = text.replaceAll("[^a-zA-ZæøåÆØÅ ]", "").toLowerCase().split("[ ,;.!:?]+");
 
-            for (int i = 0; i<ord.length -2; i++) {
-                map.computeIfAbsent(ord[i] + " " + ord[i+1], k -> new HashMap<>())
-                                .merge(ord[i+2], 1, Integer::sum);
+            for (int i = 0; i < ord.length - 2; i++) {
+                map.computeIfAbsent(ord[i] + " " + ord[i + 1], k -> new HashMap<>()).merge(ord[i + 2], 1, Integer::sum);
             }
 
-            System.out.println("Map:"+map);
+            System.out.println("Map:" + map);
 
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Fail");
         }
         return map;
     }
 
-    private static String generateText(HashMap<String, HashMap<String, Integer>> data){
+    private static String generateText(HashMap<String, HashMap<String, Integer>> data) {
         StringBuilder out = new StringBuilder();
         Set<String> keySet = data.keySet();
 
-        for(String key : keySet){
+        for (String key : keySet) {
             out.append(key);
 
             HashMap<String, Integer> innerMap = data.get(key);
@@ -122,18 +121,47 @@ public class HelloApplication extends Application {
                 sum += innerMap.get(innerKey);
             }
 
-            out.append(calculateWord(sum)+" ");
+            out.append(calculateWord(sum) + " ");
         }
 
         return out.toString();
     }
 
     //Add more parameters?
-    private  static String calculateWord(int sum){
+    private static String calculateWord(int sum) {
         String lastWord = "";
 
         //Make calculated word here
 
         return lastWord;
+    }
+
+    //  ikke ferdig, let me cook.
+    //relativt cooked nå
+    private static void wordPicker(HashMap<String, HashMap<String, Integer>> data) {
+        int sum = 0;
+        for (Map.Entry<String, HashMap<String, Integer>> entry : data.entrySet()) {
+            HashMap<String, Integer> innerMap = entry.getValue();
+            for (Integer value : innerMap.values()) {
+                sum += value;
+            }
+        }
+
+        Random random = new Random();
+        double randomValue = random.nextDouble() * sum;
+
+        for (Map.Entry<String, HashMap<String, Integer>> entry : data.entrySet()) {
+            HashMap<String, Integer> innerMap = entry.getValue();
+            for (Map.Entry<String, Integer> innerEntry : innerMap.entrySet()) {
+                String word = innerEntry.getKey();
+                int weight = innerEntry.getValue();
+                randomValue -= weight;
+
+                if (randomValue <= 0) {
+                    System.out.println("Selected word: " + word);
+                    return;
+                }
+            }
+        }
     }
 }
