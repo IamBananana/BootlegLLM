@@ -114,18 +114,26 @@ public class HelloApplication extends Application {
             out.append(key);
 
             HashMap<String, Integer> innerMap = data.get(key);
-            for (int i = 0; i < innerMap.size(); i++) {
-                innerMap.get(i);
+            int sum = 0;
+
+            //Not finished...
+
+            for (String innerKey : innerMap.keySet()) {
+                sum += innerMap.get(innerKey);
             }
 
-            out.append(calculateWord());
+            out.append(calculateWord(sum)+" ");
         }
 
         return out.toString();
     }
 
-    private  static String calculateWord(){
+    //Add more parameters?
+    private  static String calculateWord(int sum){
         String lastWord = "";
+
+        //Make calculated word here
+
         return lastWord;
     }
 }
