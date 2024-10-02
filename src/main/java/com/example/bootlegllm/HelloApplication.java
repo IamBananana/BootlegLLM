@@ -13,15 +13,10 @@ import javafx.stage.Stage;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Scanner;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class HelloApplication extends Application {
     TextField textField;
@@ -85,32 +80,30 @@ public class HelloApplication extends Application {
 
     }
 
-    private static HashMap<String, HashMap<String, Integer>> getData(String text){
+    private static HashMap<String, HashMap<String, Integer>> getData(String text) {
         HashMap<String, HashMap<String, Integer>> map = new HashMap<>();
-
         try {
             //String[] ord = text.replaceAll("[a-zA-Z,.?!\\s]", "").toLowerCase().split("\\s,.?!+");
             String[] ord = text.replaceAll("[^a-zA-Zæøå ]", "").toLowerCase().split("\\s+");
 
-            for (int i = 0; i<ord.length -2; i++) {
-                map.computeIfAbsent(ord[i] + " " + ord[i+1], k -> new HashMap<>())
-                                .merge(ord[i+2], 1, Integer::sum);
+            for (int i = 0; i < ord.length - 2; i++) {
+                map.computeIfAbsent(ord[i] + " " + ord[i + 1], k -> new HashMap<>())
+                        .merge(ord[i + 2], 1, Integer::sum);
             }
+            System.out.println("Map:" + map);
 
-            System.out.println("Map:"+map);
-
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Fail");
         }
         return map;
     }
 
-    private static String generateText(HashMap<String, HashMap<String, Integer>> data){
+    private static String generateText(HashMap<String, HashMap<String, Integer>> data) {
         StringBuilder out = new StringBuilder();
         Set<String> keySet = data.keySet();
 
-        for(String key : keySet){
+        for (String key : keySet) {
             out.append(key);
 
             HashMap<String, Integer> innerMap = data.get(key);
@@ -124,8 +117,11 @@ public class HelloApplication extends Application {
         return out.toString();
     }
 
-    private  static String calculateWord(){
+    private static String calculateWord(int count) {
         String lastWord = "";
         return lastWord;
+    }
+    private static void random(){
+
     }
 }
