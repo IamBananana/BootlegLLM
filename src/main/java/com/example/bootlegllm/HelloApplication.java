@@ -1,5 +1,6 @@
 package com.example.bootlegllm;
 
+import com.sun.source.tree.Tree;
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -23,23 +24,38 @@ import java.util.Set;
 public class HelloApplication extends Application {
     TextField textField;
     Label label;
-    Button button;
+    Button btnUrl, btnGenerate;
+    static TextArea textArea;
+    StringBuilder txtBuilder;
 
     @Override
     public void start(Stage stage) {
         FlowPane flowPane = new FlowPane();
+
         label = new Label("Gi URL: ");
         textField = new TextField();
         textField.setPrefColumnCount(30);
+
+        textArea = new TextArea();
+        textArea.setMinHeight(Screen.getPrimary().getBounds().getHeight() * 0.6);
+        textArea.setPrefWidth(Screen.getPrimary().getBounds().getWidth() * 0.6);
+        textArea.setWrapText(true);
+
         label.setMinHeight(150);
-        button = new Button("Submit");
-        flowPane.getChildren().addAll(label, textField, button);
+        btnUrl = new Button("Add URL");
+        btnGenerate = new Button("Generate");
+
+        flowPane.getChildren().addAll(label, textField, btnUrl, btnGenerate, textArea);
         flowPane.setVgap(10);
         flowPane.setHgap(10);
         flowPane.setAlignment(Pos.TOP_CENTER);
-        button.setOnAction(e -> read(flowPane));
+
+        txtBuilder = new StringBuilder();
+        btnUrl.setOnAction(e -> read(flowPane));
+        btnGenerate.setOnAction(e -> generateText(getData(txtBuilder.toString())));
 
         Scene scene = new Scene(flowPane, Screen.getPrimary().getBounds().getWidth() * 0.7, Screen.getPrimary().getBounds().getHeight() * 0.7);
+
         stage.setTitle("Hello!");
         stage.setScene(scene);
         stage.show();
@@ -50,24 +66,12 @@ public class HelloApplication extends Application {
     }
 
     private void read(FlowPane flow) {
-        TextArea textArea = new TextArea();
-        textArea.setMinHeight(Screen.getPrimary().getBounds().getHeight() * 0.6);
-        textArea.setPrefWidth(Screen.getPrimary().getBounds().getWidth() * 0.6);
-        textArea.setWrapText(true);
 
         try {
             String url = textField.getText();
             new URL(url);
             Document doc = Jsoup.connect(url).get();
-            String text = doc.text();
-
-
-            HashMap<String, HashMap<String, Integer>> map = new HashMap<>();
-            map = getData(text);
-            wordPicker(map);
-
-            flow.getChildren().clear();
-            textArea.setText(text);
+            txtBuilder.append(doc.text());
 
         } catch (IOException e) {
             if (e instanceof java.net.MalformedURLException) {
@@ -77,11 +81,9 @@ public class HelloApplication extends Application {
             }
         } catch (Exception e) {
             textArea.setText("Unexpected error: " + e.getMessage());
-        } finally {
-            flow.getChildren().add(textArea);
         }
-
     }
+
 
     private static HashMap<String, HashMap<String, Integer>> getData(String text) {
         HashMap<String, HashMap<String, Integer>> map = new HashMap<>();
@@ -90,8 +92,7 @@ public class HelloApplication extends Application {
             //Regex funker ikke helt enda, hvordan beholde ,.;:-_!?/+ ??????. Esså sykt done med regex fakk d her
             //funker sånn isj men omg
             String[] ord = text.replaceAll("[^a-zA-ZæøåÆØÅ,.;:_!?/+\\- ]", "")
-                    .toLowerCase()
-                    .split("(?=[,;.!:?+/_-])|(?<=[,;.!:?+/_-])|\\s+");
+                            .split("(?=[,;.!:?+/_-])|(?<=[,;.!:?+/_-])|\\s+");
 
             for (int i = 0; i < ord.length - 2; i++) {
                 map.computeIfAbsent(ord[i] + " " + ord[i + 1], k -> new HashMap<>()).merge(ord[i + 2], 1, Integer::sum);
@@ -113,54 +114,33 @@ public class HelloApplication extends Application {
         for (String key : keySet) {
             out.append(key);
 
-            HashMap<String, Integer> innerMap = data.get(key);
-            int sum = 0;
-
-            //Not finished...
-
-            for (String innerKey : innerMap.keySet()) {
-                sum += innerMap.get(innerKey);
-            }
-            out.append(calculateWord(sum)).append(" ");
+            //Sends in innerMap
+            out.append(wordPicker(data.get(key)));
         }
         return out.toString();
     }
 
-    //Add more parameters?
-    private static String calculateWord(int sum) {
-        String lastWord = "";
-
-        //Make calculated word here
-
-        return lastWord;
-    }
-
     //  ikke ferdig, let me cook.
     //relativt cooked nå
-    private static void wordPicker(HashMap<String, HashMap<String, Integer>> data) {
+    private static String wordPicker(HashMap<String, Integer> innerMap) {
         Random random = new Random();
 
-        for (Map.Entry<String, HashMap<String, Integer>> outerEntry : data.entrySet()) {
-            String outerKey = outerEntry.getKey();
-            HashMap<String, Integer> innerMap = outerEntry.getValue();
+        int sum = 0;
+        for (Integer value : innerMap.values()) {
+            sum += value;
+        }
 
-            int sum = 0;
-            for (Integer value : innerMap.values()) {
-                sum += value;
-            }
+        int randomValue = random.nextInt(sum);
 
-            int randomValue = random.nextInt(sum);
+        for (Map.Entry<String, Integer> innerEntry : innerMap.entrySet()) {
+            String word = innerEntry.getKey();
+            int weight = innerEntry.getValue();
+            randomValue -= weight;
 
-            for (Map.Entry<String, Integer> innerEntry : innerMap.entrySet()) {
-                String word = innerEntry.getKey();
-                int weight = innerEntry.getValue();
-                randomValue -= weight;
-
-                if (randomValue < 0) {
-                    System.out.println("Selected word from '" + outerKey + "': " + word);
-                    break;
-                }
+            if (randomValue < 0) {
+                return word;
             }
         }
+        return "$$$ Feil ved trekning av ord!!!";
     }
 }
