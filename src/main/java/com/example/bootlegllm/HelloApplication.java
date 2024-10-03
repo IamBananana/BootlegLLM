@@ -107,7 +107,7 @@ public class HelloApplication extends Application {
         return map;
     }
 
-    private static String generateText(HashMap<String, HashMap<String, Integer>> data) {
+    private static void generateText(HashMap<String, HashMap<String, Integer>> data) {
         StringBuilder out = new StringBuilder();
         Set<String> keySet = data.keySet();
 
@@ -115,9 +115,10 @@ public class HelloApplication extends Application {
             out.append(key);
 
             //Sends in innerMap
-            out.append(wordPicker(data.get(key)));
+            out.append( wordPicker(data.get(key)));
         }
-        return out.toString();
+
+        textArea.setText(out.toString());
     }
 
     //  ikke ferdig, let me cook.
@@ -138,7 +139,8 @@ public class HelloApplication extends Application {
             randomValue -= weight;
 
             if (randomValue < 0) {
-                return word;
+                if(word.charAt(0) == ',')
+                return " "+word;
             }
         }
         return "$$$ Feil ved trekning av ord!!!";
