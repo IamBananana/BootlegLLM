@@ -27,6 +27,7 @@ public class HelloApplication extends Application {
     Button btnUrl, btnGenerate;
     static TextArea textArea;
     StringBuilder txtBuilder;
+    static String[] ord;
 
     @Override
     public void start(Stage stage) {
@@ -52,7 +53,7 @@ public class HelloApplication extends Application {
 
         txtBuilder = new StringBuilder();
         btnUrl.setOnAction(e -> read(flowPane));
-        btnGenerate.setOnAction(e -> generateText(getData(txtBuilder.toString())));
+        btnGenerate.setOnAction(e -> generateText(getData(txtBuilder.toString()), "det", "var"));
 
         Scene scene = new Scene(flowPane, Screen.getPrimary().getBounds().getWidth() * 0.7, Screen.getPrimary().getBounds().getHeight() * 0.7);
 
@@ -91,7 +92,7 @@ public class HelloApplication extends Application {
         try {
             //Regex funker ikke helt enda, hvordan beholde ,.;:-_!?/+ ??????. Esså sykt done med regex fakk d her
             //funker sånn isj men omg
-            String[] ord = text.replaceAll("[^a-zA-ZæøåÆØÅ,.;:_!?/+\\- ]", "")
+            ord = text.replaceAll("[^a-zA-ZæøåÆØÅ,.;:_!?/+\\- ]", "")
                             .split("(?=[,;.!:?+/_-])|(?<=[,;.!:?+/_-])|\\s+");
 
             for (int i = 0; i < ord.length - 2; i++) {
@@ -107,26 +108,43 @@ public class HelloApplication extends Application {
         return map;
     }
 
-    private static void generateText(HashMap<String, HashMap<String, Integer>> data) {
+    private static void generateText(HashMap<String, HashMap<String, Integer>> data, String startOrd1, String startOrd2) {
         StringBuilder out = new StringBuilder();
+        String startKey = startOrd1 + " " + startOrd2;
         Set<String> keySet = data.keySet();
 
-        for (String key : keySet) {
-            out.append(key);
-
-            //Sends in innerMap
-            out.append( wordPicker(data.get(key)));
+        if (!data.containsKey(startKey)) {
+            textArea.setText("Kombinasjonen \"" + startKey + "\" finnes ikke i data.");
+            return;
         }
 
+        String nesteOrd = wordPicker(data.get(startKey));
+        out.append(startOrd1).append(" ").append(startOrd2).append(" ").append(nesteOrd);
+
+        for(String key : keySet) {
+            String[] kombo = key.split(" ");
+            if (kombo.length < 2) {
+                continue;
+            }
+            String word1 = kombo[0];
+            String word2 = kombo[1];
+            String next = wordPicker(data.get(key));
+            out.append(" ").append(word1).append(" ").append(word2).append(" ").append(next).append(" ");
+        }
+        System.out.println(out);
         textArea.setText(out.toString());
     }
 
     //  ikke ferdig, let me cook.
     //relativt cooked nå
     private static String wordPicker(HashMap<String, Integer> innerMap) {
-        Random random = new Random();
+        if (innerMap.isEmpty()) {
+            return "";
+        }
 
+        Random random = new Random();
         int sum = 0;
+
         for (Integer value : innerMap.values()) {
             sum += value;
         }
@@ -139,8 +157,11 @@ public class HelloApplication extends Application {
             randomValue -= weight;
 
             if (randomValue < 0) {
-                if(word.charAt(0) == ',')
-                return " "+word;
+                if (word != null && !word.isEmpty() && word.charAt(0) == ',') {
+                    return word;
+                } else {
+                    return word;
+                }
             }
         }
         return "$$$ Feil ved trekning av ord!!!";
