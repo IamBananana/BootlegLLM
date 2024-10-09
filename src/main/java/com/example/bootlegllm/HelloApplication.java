@@ -52,8 +52,10 @@ public class HelloApplication extends Application {
         flowPane.setAlignment(Pos.TOP_CENTER);
 
         txtBuilder = new StringBuilder();
+        String ord1 = "det";
+        String ord2 = "var";
         btnUrl.setOnAction(e -> read(flowPane));
-        btnGenerate.setOnAction(e -> generateText(getData(txtBuilder.toString()), "det", "var"));
+        btnGenerate.setOnAction(e -> generateText(getData(txtBuilder.toString()), ord1, ord2));
 
         Scene scene = new Scene(flowPane, Screen.getPrimary().getBounds().getWidth() * 0.7, Screen.getPrimary().getBounds().getHeight() * 0.7);
 
@@ -90,8 +92,6 @@ public class HelloApplication extends Application {
         HashMap<String, HashMap<String, Integer>> map = new HashMap<>();
 
         try {
-            //Regex funker ikke helt enda, hvordan beholde ,.;:-_!?/+ ??????. Esså sykt done med regex fakk d her
-            //funker sånn isj men omg
             ord = text.replaceAll("[^a-zA-ZæøåÆØÅ,.;:_!?/+\\- ]", "")
                             .split("(?=[,;.!:?+/_-])|(?<=[,;.!:?+/_-])|\\s+");
 
@@ -131,12 +131,9 @@ public class HelloApplication extends Application {
             String next = wordPicker(data.get(key));
             out.append(" ").append(word1).append(" ").append(word2).append(" ").append(next).append(" ");
         }
-        System.out.println(out);
         textArea.setText(out.toString());
     }
 
-    //  ikke ferdig, let me cook.
-    //relativt cooked nå
     private static String wordPicker(HashMap<String, Integer> innerMap) {
         if (innerMap.isEmpty()) {
             return "";
