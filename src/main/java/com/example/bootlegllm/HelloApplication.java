@@ -129,6 +129,7 @@ public class HelloApplication extends Application {
             String word1 = kombo[0];
             String word2 = kombo[1];
             String next = wordPicker(data.get(key));
+            //Bare bruk key????
             out.append(" ").append(word1).append(" ").append(word2).append(" ").append(next).append(" ");
         }
         textArea.setText(out.toString());
@@ -154,6 +155,7 @@ public class HelloApplication extends Application {
             randomValue -= weight;
 
             if (randomValue < 0) {
+                //Bruh...who wrote this?
                 if (word != null && !word.isEmpty() && word.charAt(0) == ',') {
                     return word;
                 } else {
