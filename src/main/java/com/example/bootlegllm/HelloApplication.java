@@ -54,7 +54,7 @@ public class HelloApplication extends Application {
         String ord2 = "var";
 
         btnUrl.setOnAction(e -> read(flowPane));
-        btnGenerate.setOnAction(e -> generateText(getData(txtBuilder.toString()), ord1, ord2));
+        btnGenerate.setOnAction(e -> generateText2(getData(txtBuilder.toString()), ord1, ord2));
 
         Scene scene = new Scene(flowPane, Screen.getPrimary().getBounds().getWidth() * 0.7, Screen.getPrimary().getBounds().getHeight() * 0.7);
 
@@ -74,7 +74,7 @@ public class HelloApplication extends Application {
             new URL(url);
             Document doc = Jsoup.connect(url).get();
             txtBuilder.append(doc.text());
-
+            textArea.setText("Successfully added URL: " + url);
         } catch (IOException e) {
             if (e instanceof java.net.MalformedURLException) {
                 textArea.setText("Error: Malformed URL. Please enter a valid URL.");
@@ -131,6 +131,26 @@ public class HelloApplication extends Application {
             //Bare bruk key????
             // nei det kan man ikke fordi den skal alltid hoppe videre til ett ord som ikke er key, men siste ordet i key og et random ord
             out.append(" ").append(word1).append(" ").append(word2).append(" ").append(next).append(" ");
+        }
+        textArea.setText(out.toString());
+    }
+
+    private static void generateText2(HashMap<String, HashMap<String, Integer>> data, String startOrd1, String startOrd2) {
+        StringBuilder out = new StringBuilder();
+        String startKey = startOrd1 + " " + startOrd2;
+        String pickedWord = wordPicker(data.get(startKey));
+        out.append(startKey).append(" ").append(pickedWord).append(" ");
+
+        for(int i = 0; i<300; i++) {
+            String[] words = startKey.split(" ");
+            startKey = words[1] + " " + pickedWord;
+
+            if (data.containsKey(startKey)) {
+                pickedWord = wordPicker(data.get(startKey));
+                out.append(pickedWord).append(" ");
+            } else {
+                break;
+            }
         }
         textArea.setText(out.toString());
     }
