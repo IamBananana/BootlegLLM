@@ -1,6 +1,5 @@
 package com.example.bootlegllm;
 
-import com.sun.source.tree.Tree;
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -13,7 +12,6 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
@@ -54,6 +52,7 @@ public class HelloApplication extends Application {
         txtBuilder = new StringBuilder();
         String ord1 = "det";
         String ord2 = "var";
+
         btnUrl.setOnAction(e -> read(flowPane));
         btnGenerate.setOnAction(e -> generateText(getData(txtBuilder.toString()), ord1, ord2));
 
@@ -130,6 +129,7 @@ public class HelloApplication extends Application {
             String word2 = kombo[1];
             String next = wordPicker(data.get(key));
             //Bare bruk key????
+            // nei det kan man ikke fordi den skal alltid hoppe videre til ett ord som ikke er key, men siste ordet i key og et random ord
             out.append(" ").append(word1).append(" ").append(word2).append(" ").append(next).append(" ");
         }
         textArea.setText(out.toString());
