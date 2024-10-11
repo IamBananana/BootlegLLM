@@ -155,7 +155,7 @@ public class HelloApplication extends Application {
             randomValue -= weight;
 
             if (randomValue < 0) {
-                //Bruh...who wrote this?
+                //Bruh...
                 if (word != null && !word.isEmpty() && word.charAt(0) == ',') {
                     return word;
                 } else {
