@@ -74,7 +74,7 @@ public class HelloApplication extends Application {
             new URL(url);
             Document doc = Jsoup.connect(url).get();
             txtBuilder.append(doc.text());
-            textArea.setText("Successfully added URL: " + url);
+            textArea.setText( textArea.getText() +"Successfully added URL: " + url + "\n");
         } catch (IOException e) {
             if (e instanceof java.net.MalformedURLException) {
                 textArea.setText("Error: Malformed URL. Please enter a valid URL.");
