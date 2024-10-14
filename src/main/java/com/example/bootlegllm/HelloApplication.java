@@ -54,7 +54,7 @@ public class HelloApplication extends Application {
         String ord2 = "var";
 
         btnUrl.setOnAction(e -> read(flowPane));
-        btnGenerate.setOnAction(e -> generateText2(getData(txtBuilder.toString()), ord1, ord2));
+        btnGenerate.setOnAction(e -> generateText(getData(txtBuilder.toString()), ord1, ord2));
 
         Scene scene = new Scene(flowPane, Screen.getPrimary().getBounds().getWidth() * 0.7, Screen.getPrimary().getBounds().getHeight() * 0.7);
 
@@ -118,42 +118,43 @@ public class HelloApplication extends Application {
         }
 
         String nesteOrd = wordPicker(data.get(startKey));
-        out.append(startOrd1).append(" ").append(startOrd2).append(" ").append(nesteOrd);
+        out.append(startOrd1).append(" ").append(startOrd2).append(" ").append(nesteOrd).append(" ");
 
         for(String key : keySet) {
             String[] kombo = key.split(" ");
             if (kombo.length < 2) {
                 continue;
             }
-            String word1 = kombo[0];
             String word2 = kombo[1];
             String next = wordPicker(data.get(key));
-            //Bare bruk key????
-            // nei det kan man ikke fordi den skal alltid hoppe videre til ett ord som ikke er key, men siste ordet i key og et random ord
-            out.append(" ").append(word1).append(" ").append(word2).append(" ").append(next).append(" ");
+
+            out.append(word2).append(" ").append(next).append(" ");
         }
         textArea.setText(out.toString());
     }
 
     private static void generateText2(HashMap<String, HashMap<String, Integer>> data, String startOrd1, String startOrd2) {
         StringBuilder out = new StringBuilder();
+        boolean hasMoreWords = true;
         String startKey = startOrd1 + " " + startOrd2;
         String pickedWord = wordPicker(data.get(startKey));
-        out.append(startKey).append(" ").append(pickedWord).append(" ");
+        out.append(startOrd1).append(" ").append(startOrd2).append(" ").append(pickedWord).append(" ");
 
-        for(int i = 0; i<300; i++) {
-            String[] words = startKey.split(" ");
-            startKey = words[1] + " " + pickedWord;
+        while (hasMoreWords) {
+            startOrd1 = startOrd2;
+            startOrd2 = pickedWord;
+            startKey = startOrd1 + " " + startOrd2;
 
             if (data.containsKey(startKey)) {
                 pickedWord = wordPicker(data.get(startKey));
                 out.append(pickedWord).append(" ");
             } else {
-                break;
+                hasMoreWords = false;
             }
         }
         textArea.setText(out.toString());
     }
+
 
     private static String wordPicker(HashMap<String, Integer> innerMap) {
         if (innerMap.isEmpty()) {
@@ -185,4 +186,5 @@ public class HelloApplication extends Application {
         }
         return "$$$ Feil ved trekning av ord!!!";
     }
+
 }
