@@ -54,7 +54,7 @@ public class HelloApplication extends Application {
         String ord2 = "var";
 
         btnUrl.setOnAction(e -> read(flowPane));
-        btnGenerate.setOnAction(e -> generateText(getData(txtBuilder.toString()), ord1, ord2));
+        btnGenerate.setOnAction(e -> generateText2(getData(txtBuilder.toString()), ord1, ord2));
 
         Scene scene = new Scene(flowPane, Screen.getPrimary().getBounds().getWidth() * 0.7, Screen.getPrimary().getBounds().getHeight() * 0.7);
 
@@ -125,10 +125,9 @@ public class HelloApplication extends Application {
             if (kombo.length < 2) {
                 continue;
             }
-            String word2 = kombo[1];
             String next = wordPicker(data.get(key));
 
-            out.append(word2).append(" ").append(next).append(" ");
+            out.append(next).append(" ");
         }
         textArea.setText(out.toString());
     }
@@ -137,6 +136,12 @@ public class HelloApplication extends Application {
         StringBuilder out = new StringBuilder();
         boolean hasMoreWords = true;
         String startKey = startOrd1 + " " + startOrd2;
+
+        if (!data.containsKey(startKey)) {
+            textArea.setText("Kombinasjonen \"" + startKey + "\" finnes ikke i data.");
+            return;
+        }
+
         String pickedWord = wordPicker(data.get(startKey));
         out.append(startOrd1).append(" ").append(startOrd2).append(" ").append(pickedWord).append(" ");
 
@@ -147,13 +152,18 @@ public class HelloApplication extends Application {
 
             if (data.containsKey(startKey)) {
                 pickedWord = wordPicker(data.get(startKey));
-                out.append(pickedWord).append(" ");
+                if (pickedWord == null || pickedWord.isEmpty()) {
+                    hasMoreWords = false;
+                } else {
+                    out.append(pickedWord).append(" ");
+                }
             } else {
                 hasMoreWords = false;
             }
         }
         textArea.setText(out.toString());
     }
+
 
 
     private static String wordPicker(HashMap<String, Integer> innerMap) {
