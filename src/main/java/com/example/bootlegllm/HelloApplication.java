@@ -54,7 +54,7 @@ public class HelloApplication extends Application {
         String ord2 = "var";
 
         btnUrl.setOnAction(e -> read(flowPane));
-        btnGenerate.setOnAction(e -> generateText2(getData(txtBuilder.toString()), ord1, ord2));
+        btnGenerate.setOnAction(e -> generateText(getData(txtBuilder.toString()), ord1, ord2));
 
         Scene scene = new Scene(flowPane, Screen.getPrimary().getBounds().getWidth() * 0.7, Screen.getPrimary().getBounds().getHeight() * 0.7);
 
@@ -92,7 +92,7 @@ public class HelloApplication extends Application {
 
         try {
             ord = text.replaceAll("[^a-zA-ZæøåÆØÅ,.;:_!?/+\\- ]", "")
-                            .split("(?=[,;.!:?+/_-])|(?<=[,;.!:?+/_-])|\\s+");
+                    .split("(?=[,;.!:?+/_-])|(?<=[,;.!:?+/_-])|\\s+");
 
             for (int i = 0; i < ord.length - 2; i++) {
                 map.computeIfAbsent(ord[i] + " " + ord[i + 1], k -> new HashMap<>()).merge(ord[i + 2], 1, Integer::sum);
@@ -110,7 +110,6 @@ public class HelloApplication extends Application {
     private static void generateText(HashMap<String, HashMap<String, Integer>> data, String startOrd1, String startOrd2) {
         StringBuilder out = new StringBuilder();
         String startKey = startOrd1 + " " + startOrd2;
-        Set<String> keySet = data.keySet();
 
         if (!data.containsKey(startKey)) {
             textArea.setText("Kombinasjonen \"" + startKey + "\" finnes ikke i data.");
@@ -119,16 +118,19 @@ public class HelloApplication extends Application {
 
         String nesteOrd = wordPicker(data.get(startKey));
         out.append(startOrd1).append(" ").append(startOrd2).append(" ").append(nesteOrd).append(" ");
+        String nøkkel = startOrd2 + " " + nesteOrd;
 
-        for(String key : keySet) {
+        for (String key : data.keySet()) {
             String[] kombo = key.split(" ");
             if (kombo.length < 2) {
                 continue;
             }
-            String next = wordPicker(data.get(key));
 
-            out.append(next).append(" ");
-        }
+            String lastWord = kombo[1];
+            String next = wordPicker(data.get(nøkkel));
+            nøkkel = lastWord + " " + next;
+            out.append(nøkkel).append(" ");
+            }
         textArea.setText(out.toString());
     }
 
@@ -164,10 +166,8 @@ public class HelloApplication extends Application {
         textArea.setText(out.toString());
     }
 
-
-
     private static String wordPicker(HashMap<String, Integer> innerMap) {
-        if (innerMap.isEmpty()) {
+        if (innerMap == null || innerMap.isEmpty()) {
             return "";
         }
 
