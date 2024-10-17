@@ -77,12 +77,12 @@ public class HelloApplication extends Application {
             textArea.setText( textArea.getText() +"Successfully added URL: " + url + "\n");
         } catch (IOException e) {
             if (e instanceof java.net.MalformedURLException) {
-                textArea.setText("Error: Malformed URL. Please enter a valid URL.");
+                textArea.setText("Error: Malformed URL. Please enter a valid URL." + "\n");
             } else {
-                textArea.setText("Error fetching the URL. HTTP Status: " + e.getMessage());
+                textArea.setText("Error fetching the URL. HTTP Status: " + e.getMessage() + "\n");
             }
         } catch (Exception e) {
-            textArea.setText("Unexpected error: " + e.getMessage());
+            textArea.setText("Unexpected error: " + e.getMessage() + "\n");
         }
     }
 
@@ -112,7 +112,7 @@ public class HelloApplication extends Application {
         String startKey = startOrd1 + " " + startOrd2;
 
         if (!data.containsKey(startKey)) {
-            textArea.setText("Kombinasjonen \"" + startKey + "\" finnes ikke i data.");
+            textArea.setText("Kombinasjonen \"" + startKey + "\" finnes ikke i data." + "\n");
             return;
         }
 
@@ -140,13 +140,14 @@ public class HelloApplication extends Application {
         String startKey = startOrd1 + " " + startOrd2;
 
         if (!data.containsKey(startKey)) {
-            textArea.setText("Kombinasjonen \"" + startKey + "\" finnes ikke i data.");
+            textArea.setText("Kombinasjonen \"" + startKey + "\" finnes ikke i data." + "\n");
             return;
         }
 
         String pickedWord = wordPicker(data.get(startKey));
         out.append(startOrd1).append(" ").append(startOrd2).append(" ").append(pickedWord).append(" ");
-
+       
+        /*
         while (hasMoreWords) {
             startOrd1 = startOrd2;
             startOrd2 = pickedWord;
@@ -163,6 +164,23 @@ public class HelloApplication extends Application {
                 hasMoreWords = false;
             }
         }
+        */
+
+        //Ny
+        int counter = 0;
+        while(data.containsKey(startKey) && counter < 1000){
+
+            startKey = startOrd2 + " " + pickedWord;
+
+            startOrd2 = pickedWord;
+
+            pickedWord = wordPicker(data.get(startKey));
+            out.append(pickedWord).append(" ");
+            System.out.println(counter);
+
+            counter++;
+        }
+        
         textArea.setText(out.toString());
     }
 
