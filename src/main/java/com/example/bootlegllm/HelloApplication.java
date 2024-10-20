@@ -20,7 +20,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
+
 
 public class HelloApplication extends Application {
     TextField textField;
@@ -90,7 +90,7 @@ public class HelloApplication extends Application {
             new URL(url);
             Document doc = Jsoup.connect(url).get();
             txtBuilder.append(doc.text());
-            textArea.setText( textArea.getText() +"Successfully added URL: " + url + "\n");
+            textArea.setText(textArea.getText() + "Successfully added URL: " + url + "\n");
         } catch (IOException e) {
             if (e instanceof java.net.MalformedURLException) {
                 textArea.setText("Error: Malformed URL. Please enter a valid URL." + "\n");
@@ -136,7 +136,7 @@ public class HelloApplication extends Application {
         out.append(startOrd1).append(" ").append(startOrd2).append(" ").append(pickedWord).append(" ");
 
         int counter = 0;
-        while(data.containsKey(startKey) && counter < 1000){
+        while (data.containsKey(startKey) && counter < 1000) {
 
             startKey = startOrd2 + " " + pickedWord;
 
@@ -148,10 +148,20 @@ public class HelloApplication extends Application {
 
             counter++;
         }
-        
+
         textArea.setText(out.toString());
     }
 
+    /**
+     * @param innerMap Tar innerste mappet siden det er der sannsynligheten av ord ligger
+     *                 Looper gjennom hele mappet og summerer opp antall forekomster slik at
+     *                 man kan lage vektet sannsynlighet basert på frekvens av ord
+     *                 <p>
+     *                 Random velger random int basert på summen av frekvensen og randomValue blir oppdatert etter hver
+     *                 loop med vekten vi skal sjekke på. Når randomValue - vekt er mindre enn 0 har vi funnet
+     *                 ordet
+     * @return Returnerer feil hvis loopen har gått gjennom og ikke finnet et ord
+     */
     private static String wordPicker(HashMap<String, Integer> innerMap) {
         if (innerMap == null || innerMap.isEmpty()) {
             return "";
@@ -173,11 +183,7 @@ public class HelloApplication extends Application {
 
             if (randomValue < 0) {
                 //Bruh...
-                if (word != null && !word.isEmpty() && word.charAt(0) == ',') {
-                    return word;
-                } else {
-                    return word;
-                }
+                return word;
             }
         }
         return "$$$ Feil ved trekning av ord!!!";
