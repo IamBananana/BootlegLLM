@@ -12,7 +12,10 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,19 +24,22 @@ import java.util.Set;
 
 public class HelloApplication extends Application {
     TextField textField;
+    TextField filnavn;
     Label label;
-    Button btnUrl, btnGenerate;
+    Label filInfo;
+    Button btnUrl, btnGenerate, btnSave;
     static TextArea textArea;
     StringBuilder txtBuilder;
     static String[] ord;
 
     @Override
-    public void start(Stage stage) {
+    public void start(Stage stage) throws Exception {
         FlowPane flowPane = new FlowPane();
 
         label = new Label("Gi URL: ");
         textField = new TextField();
         textField.setPrefColumnCount(30);
+        filInfo = new Label();
 
         textArea = new TextArea();
         textArea.setMinHeight(Screen.getPrimary().getBounds().getHeight() * 0.6);
@@ -43,8 +49,10 @@ public class HelloApplication extends Application {
         label.setMinHeight(150);
         btnUrl = new Button("Add URL");
         btnGenerate = new Button("Generate");
+        btnSave = new Button("Save text to file");
+        filnavn = new TextField("Angi filnavn:");
 
-        flowPane.getChildren().addAll(label, textField, btnUrl, btnGenerate, textArea);
+        flowPane.getChildren().addAll(label, textField, btnUrl, btnGenerate, filnavn, btnSave, filInfo, textArea);
         flowPane.setVgap(10);
         flowPane.setHgap(10);
         flowPane.setAlignment(Pos.TOP_CENTER);
@@ -54,7 +62,15 @@ public class HelloApplication extends Application {
         String ord2 = "var";
 
         btnUrl.setOnAction(e -> read(flowPane));
-        btnGenerate.setOnAction(e -> generateText(getData(txtBuilder.toString()), ord1, ord2));
+        btnGenerate.setOnAction(e -> generateText2(getData(txtBuilder.toString()), ord1, ord2));
+        btnSave.setOnAction(e -> {
+            try {
+                saveToFile();
+            } catch (FileNotFoundException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+
 
         Scene scene = new Scene(flowPane, Screen.getPrimary().getBounds().getWidth() * 0.7, Screen.getPrimary().getBounds().getHeight() * 0.7);
 
@@ -107,36 +123,8 @@ public class HelloApplication extends Application {
         return map;
     }
 
-    private static void generateText(HashMap<String, HashMap<String, Integer>> data, String startOrd1, String startOrd2) {
-        StringBuilder out = new StringBuilder();
-        String startKey = startOrd1 + " " + startOrd2;
-
-        if (!data.containsKey(startKey)) {
-            textArea.setText("Kombinasjonen \"" + startKey + "\" finnes ikke i data." + "\n");
-            return;
-        }
-
-        String nesteOrd = wordPicker(data.get(startKey));
-        out.append(startOrd1).append(" ").append(startOrd2).append(" ").append(nesteOrd).append(" ");
-        String nøkkel = startOrd2 + " " + nesteOrd;
-
-        for (String key : data.keySet()) {
-            String[] kombo = key.split(" ");
-            if (kombo.length < 2) {
-                continue;
-            }
-
-            String lastWord = kombo[1];
-            String next = wordPicker(data.get(nøkkel));
-            nøkkel = lastWord + " " + next;
-            out.append(nøkkel).append(" ");
-            }
-        textArea.setText(out.toString());
-    }
-
     private static void generateText2(HashMap<String, HashMap<String, Integer>> data, String startOrd1, String startOrd2) {
         StringBuilder out = new StringBuilder();
-        boolean hasMoreWords = true;
         String startKey = startOrd1 + " " + startOrd2;
 
         if (!data.containsKey(startKey)) {
@@ -146,27 +134,7 @@ public class HelloApplication extends Application {
 
         String pickedWord = wordPicker(data.get(startKey));
         out.append(startOrd1).append(" ").append(startOrd2).append(" ").append(pickedWord).append(" ");
-       
-        /*
-        while (hasMoreWords) {
-            startOrd1 = startOrd2;
-            startOrd2 = pickedWord;
-            startKey = startOrd1 + " " + startOrd2;
 
-            if (data.containsKey(startKey)) {
-                pickedWord = wordPicker(data.get(startKey));
-                if (pickedWord == null || pickedWord.isEmpty()) {
-                    hasMoreWords = false;
-                } else {
-                    out.append(pickedWord).append(" ");
-                }
-            } else {
-                hasMoreWords = false;
-            }
-        }
-        */
-
-        //Ny
         int counter = 0;
         while(data.containsKey(startKey) && counter < 1000){
 
@@ -213,6 +181,18 @@ public class HelloApplication extends Application {
             }
         }
         return "$$$ Feil ved trekning av ord!!!";
+    }
+
+    public void saveToFile() throws FileNotFoundException {
+        try {
+            String fil = filnavn.getText();
+            PrintWriter skriver = new PrintWriter(fil + ".txt");
+            skriver.println(textArea.getText());
+            skriver.close();
+            filInfo.setText("Filen ble lagret som: " + fil + ".txt");
+        } catch (FileNotFoundException e) {
+            filInfo.setText(e.getMessage());
+        }
     }
 
 }
