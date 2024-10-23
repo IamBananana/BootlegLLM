@@ -107,7 +107,13 @@ public class HelloApplication extends Application {
         }
     }
 
-
+    /**Erik Runde
+     * Metoden for å konvertere teksten til ord, basert på whitespace og ulike tegn.
+     * Tar inn de to første ordene som nøkkel, også tar inn siste ordet som innermap
+     * @param text
+     * @return map - skriver ut hele mapen
+     * try-catch kan være nyttig hvis det er noe feil med regex-en eller null tekst
+     */
     private static HashMap<String, HashMap<String, Integer>> getData(String text) {
         HashMap<String, HashMap<String, Integer>> map = new HashMap<>();
 
