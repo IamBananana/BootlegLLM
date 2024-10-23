@@ -57,6 +57,7 @@ public class HelloApplication extends Application {
         flowPane.setHgap(10);
         flowPane.setAlignment(Pos.TOP_CENTER);
 
+        // Angir startordene manuelt her
         txtBuilder = new StringBuilder();
         String ord1 = "det";
         String ord2 = "var";
@@ -83,6 +84,10 @@ public class HelloApplication extends Application {
         launch();
     }
 
+    /**
+     * Metode for å lese tekst innholdet på nettside. Bruker JSoup for å lese teksten
+     * @param flow
+     */
     private void read(FlowPane flow) {
 
         try {
@@ -182,13 +187,17 @@ public class HelloApplication extends Application {
             randomValue -= weight;
 
             if (randomValue < 0) {
-                //Bruh...
                 return word;
             }
         }
         return "$$$ Feil ved trekning av ord!!!";
     }
 
+    /**
+     * Metode for å lagre den genererte teksten i textarea over til et filnavn som bruker selv velger.
+     * Dersom fil lagringen er vellykket, kommer det beskjed om dette i en label, samme gjelder dersom det ikke går.
+     * @throws FileNotFoundException
+     */
     public void saveToFile() throws FileNotFoundException {
         try {
             String fil = filnavn.getText();
@@ -200,5 +209,4 @@ public class HelloApplication extends Application {
             filInfo.setText(e.getMessage());
         }
     }
-
 }
