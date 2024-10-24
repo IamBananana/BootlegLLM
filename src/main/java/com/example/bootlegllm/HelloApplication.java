@@ -32,6 +32,11 @@ public class HelloApplication extends Application {
     StringBuilder txtBuilder;
     static String[] ord;
 
+    /**
+     * Oppretter GUI
+     * @param stage
+     * @throws Exception
+     */
     @Override
     public void start(Stage stage) throws Exception {
         FlowPane flowPane = new FlowPane();
