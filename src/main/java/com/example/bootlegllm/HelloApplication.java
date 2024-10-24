@@ -63,7 +63,7 @@ public class HelloApplication extends Application {
         String ord2 = "var";
 
         btnUrl.setOnAction(e -> read(flowPane));
-        btnGenerate.setOnAction(e -> generateText2(getData(txtBuilder.toString()), ord1, ord2));
+        btnGenerate.setOnAction(e -> generateText(getData(txtBuilder.toString()), ord1, ord2));
         btnSave.setOnAction(e -> {
             try {
                 saveToFile();
@@ -134,7 +134,18 @@ public class HelloApplication extends Application {
         return map;
     }
 
-    private static void generateText2(HashMap<String, HashMap<String, Integer>> data, String startOrd1, String startOrd2) {
+    /**
+     * Generer den tilfeldige teksten.
+     * @param data Tar inn HashMap som inneholder all data om antall forekomster av ulike ord kombinasjoner.
+     * @param startOrd1
+     * @param startOrd2 Bruker startOrd1/2 som en statisk to ords kombinasjon og bruker dette til å generere det første tilfeldig 3. ord.
+     *                  <p>
+     *                  startOrd1/2 blir satt som startKey, men når while loopen starter så blir startKey satt til startOrd2 og pickedWord (tilfeldig generert ord basert på startKey)
+     *                  startKey blir satt til startOrd2 + pickedWord så blir startOrd2 satt til pickedWord og deretter blir pickedWord nytt tileldig ord basert på key.
+     *                  Gjennom hver iterasjon blir det tilfeldige ordet lagret i en out String. Whilen er hard kodet til å iterere 1000 ganger (dvs. vi får 1000 + 2 ord)
+     *                  Metoden returnerer ingenting, men sender out String til en textArea som vises til brukeren når while-loopen er ferdig.
+     */
+    private static void generateText(HashMap<String, HashMap<String, Integer>> data, String startOrd1, String startOrd2) {
         StringBuilder out = new StringBuilder();
         String startKey = startOrd1 + " " + startOrd2;
 
@@ -155,7 +166,6 @@ public class HelloApplication extends Application {
 
             pickedWord = wordPicker(data.get(startKey));
             out.append(pickedWord).append(" ");
-            System.out.println(counter);
 
             counter++;
         }
