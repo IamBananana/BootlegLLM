@@ -22,6 +22,8 @@ import java.util.Map;
 import java.util.Random;
 
 
+// Personer på gruppen: Erik, Richard, Simen og Ulrikke
+// Kilder koden er trent på: grunnet startordene "det + var" har vi tatt utganspunkt i snl andre verdenskrig
 public class HelloApplication extends Application {
     TextField textField;
     TextField filnavn;
